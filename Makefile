@@ -1,15 +1,15 @@
 CC = gcc
-CFLAGS = -O2 -g
+CFLAGS = -g
 AR = ar rc
 
 BUILD = build
 
 .PHONY : all lib clean tool
 
-LIBSRCS = main.c
+LIBSRCS = main.c net_utils.c pbc_utils.c str_utils.c
 LIBNAME = libhdclient.a
 
-TESTSRCS = main.c pb_test.c
+TESTSRCS = main.c pb_test.c pbc_register_all.c yarn_type.c
 
 BUILD_O = $(BUILD)/o
 

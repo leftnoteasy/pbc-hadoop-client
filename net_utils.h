@@ -21,6 +21,6 @@ int int_endian_swap(int i);
 void write_endian_swap_int(int socket, int num);
 
 // swap endian for a short and write it to socket
-void write_endian_swap_short(int socket, int num);
+void write_endian_swap_short(int socket, short num);
 
 #endif // _HD_CLIENT_NET_UTILS_H
