@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -O2
+CFLAGS = -O2 -g
 AR = ar rc
 
 BUILD = build
@@ -9,11 +9,11 @@ BUILD = build
 LIBSRCS = main.c
 LIBNAME = libhdclient.a
 
-TESTSRCS = main.c 
+TESTSRCS = main.c pb_test.c
 
 BUILD_O = $(BUILD)/o
 
-all : lib test ext-make
+all : ext-make lib test 
 
 ext-make:
 	make -C ext/pbc
@@ -57,7 +57,7 @@ define TEST_temp
   $$(TAR) : | $(BUILD)
   $$(TAR) : $(LIBNAME)
   $$(TAR) : test/$(1) 
-	cd $(BUILD) && $(CC) $(CFLAGS) -I.. -L. -o $$(notdir $$@) ../$$< -lhdclient
+	cd $(BUILD) && $(CC) $(CFLAGS) -I.. -L. -L../ext/pbc/build -o $$(notdir $$@) ../$$< -lhdclient -lpbc
 endef
 
 $(foreach s,$(TESTSRCS),$(eval $(call TEST_temp,$(s))))
