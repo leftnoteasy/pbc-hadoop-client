@@ -9,7 +9,7 @@ BUILD = build
 LIBSRCS = main.c net_utils.c pbc_utils.c str_utils.c
 LIBNAME = libhdclient.a
 
-TESTSRCS = main.c pb_test.c pbc_register_all.c yarn_type.c
+TESTSRCS = main.c pb_test.c pbc_register_all.c yarn_type.c hadoop_rpc_request.c
 
 BUILD_O = $(BUILD)/o
 

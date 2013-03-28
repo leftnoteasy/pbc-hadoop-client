@@ -8,31 +8,27 @@
 
 static void
 test_rmessage(struct pbc_env *env, struct pbc_slice *slice) {
-    struct pbc_rmessage * m = pbc_rmessage_new(env, "LocalResourceProto", slice);
+    struct pbc_rmessage * m = pbc_rmessage_new(env, "hadoop.common.HadoopRpcRequestProto", slice);
     if (m==NULL) {
         printf("Error : %s",pbc_error(env));
         return;
     }
-    printf("size = %d\n", pbc_rmessage_integer(m , "size" , 0 , NULL));
-    printf("ts = %d\n", pbc_rmessage_integer(m , "timestamp" , 0 , NULL));
-    printf("pattern = %s\n", pbc_rmessage_string(m , "pattern" , 0 , NULL));
-
-    struct pbc_rmessage* url = pbc_rmessage_message(m, "resource", 0);
-    printf("scheme = %s\n", pbc_rmessage_string(url, "scheme", 0, NULL));
+    printf("methodName = %s\n", pbc_rmessage_string(m , "methodName" , 0 , NULL));
+    int* buffer = (int*)pbc_rmessage_string(m, "request", 0, NULL);
+    printf("request = %d %d\n", buffer[0], buffer[1]);
 
     pbc_rmessage_delete(m);
 }
 
 static struct pbc_wmessage *
 test_wmessage(struct pbc_env * env) {
-    struct pbc_wmessage * msg = pbc_wmessage_new(env, "LocalResourceProto");
+    struct pbc_wmessage * msg = pbc_wmessage_new(env, "hadoop.common.HadoopRpcRequestProto");
 
-    pbc_wmessage_integer(msg, "size", 123455432, 0);
-    pbc_wmessage_integer(msg, "timestamp" , 99999999, 0);
-    pbc_wmessage_string(msg, "pattern", "pattern-pattern", -1);
-
-    struct pbc_wmessage * url = pbc_wmessage_message(msg, "resource");
-    pbc_wmessage_string(url , "scheme", "ftp" , -1);
+    int a[2];
+    a[0] = 0;
+    a[1] = 3399;
+    pbc_wmessage_string(msg, "methodName", "name", -1);
+    pbc_wmessage_string(msg , "request", (char*)(&(a[0])) , sizeof(int) * 2);
     return msg;
 }
 

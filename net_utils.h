@@ -23,4 +23,7 @@ void write_endian_swap_int(int socket, int num);
 // swap endian for a short and write it to socket
 void write_endian_swap_short(int socket, short num);
 
+// write protobuf-style varint-int to buffer
+int write_raw_varint32(char* buffer, int value)
+
 #endif // _HD_CLIENT_NET_UTILS_H

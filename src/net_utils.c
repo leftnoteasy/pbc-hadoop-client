@@ -21,3 +21,20 @@ void write_endian_swap_short(int socket, short num) {
     short len_for_send = short_endian_swap(num);
     write(socket, &(len_for_send), 2);   
 }
+
+// write protobuf-style varint-int to buffer
+int write_raw_varint32(char* buffer, int value) {
+    int index = 0;
+    while (1) {
+        if ((value & ~0x7F) == 0) {
+            buffer[index] = (char)value;
+            index++;
+            return index;
+        } else {
+            buffer[index] = (char)((value & 0x7F) | 0x80);
+            index++;
+            value >>= 7;
+        }
+    }
+    return index;
+}
