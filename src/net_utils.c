@@ -38,3 +38,129 @@ int write_raw_varint32(char* buffer, int value) {
     }
     return index;
 }
+
+/* try to read buffer with length=size to socket, will fail when 
+ * read failed,
+ * return 0 when succeed
+ */ 
+int read_all(int socket_id, char* buffer, int size) {
+    int bytes_read = 0;
+    int retval;
+
+    if (size < 0) {
+        printf("size is <= 0, please check.\n");
+        return -1;
+    }
+
+    // we will not do anything for null buffer
+    if (!buffer) {
+        printf("buffer is null, please check.\n");
+        return -1;
+    }
+
+    while (bytes_read < size) {
+        retval = read(socket_id, buffer + bytes_read, size - bytes_read);
+        if (retval >= 0){
+            bytes_read += retval;
+        } else {
+            printf("error in reading data.\n");
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+/* try to write all buffer to socket incase not all data written
+ * will failed when write failed
+ */
+int write_all(int socket_id, const char* buffer, int size) {
+    int bytes_written = 0;
+    int retval;
+
+    if (size < 0) {
+        printf("size is <= 0, please check.\n");
+        return -1;
+    }
+
+    // we will not do anything for null buffer
+    if (!buffer) {
+        printf("buffer is null, will return.\n");
+        return 0;
+    }
+
+    while (bytes_written < size) {
+        retval = write(socket_id, buffer + bytes_written, size - bytes_written);
+        if (retval >= 0){
+            bytes_written += retval;
+        } else {
+            printf("error in writting data.\n");
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+// read protbuf-style varint-int from socket
+int read_raw_varint32(int socket_id, int* readlen, int* value) {
+    *readlen = 0;
+    char tmp;
+    read(socket_id, &tmp, 1);
+    (*readlen)++;
+    if (tmp >= 0) {
+        *value = tmp;
+        return 0;
+    }
+    int result = tmp & 0x7f;
+    read(socket_id, &tmp, 1);
+    (*readlen)++;
+    if (tmp >= 0)
+    {
+        result |= tmp << 7;
+    }
+    else
+    {
+        result |= (tmp & 0x7f) << 7;
+        read(socket_id, &tmp, 1);
+        (*readlen)++;
+        if (tmp >= 0)
+        {
+            result |= tmp << 14;
+        }
+        else
+        {
+            result |= (tmp & 0x7f) << 14;
+            read(socket_id, &tmp, 1);
+            (*readlen)++;
+            if (tmp >= 0)
+            {
+                result |= tmp << 21;
+            }
+            else
+            {
+                result |= (tmp & 0x7f) << 21;
+                read(socket_id, &tmp, 1);
+                (*readlen)++;
+                result |= (tmp << 28);
+                if (tmp < 0)
+                {
+                    int i;
+                    for (i = 0; i < 5; i++)
+                    {
+                        read(socket_id, &tmp, 1);
+                        (*readlen)++;
+                        if (tmp >= 0)
+                        {
+                            *value = result;
+                            return -1;
+                        }
+                    }
+                    return 0;
+                }
+            }
+        }
+    }
+    *value = result;
+    return 0;
+}
