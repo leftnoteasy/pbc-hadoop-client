@@ -24,6 +24,22 @@ void write_endian_swap_int(int socket, int num);
 void write_endian_swap_short(int socket, short num);
 
 // write protobuf-style varint-int to buffer
-int write_raw_varint32(char* buffer, int value)
+int write_raw_varint32(char* buffer, int value);
+
+// read protbuf-style varint-int from socket
+// return 0 if succeed
+int read_raw_varint32(int socket_id, int* readlen, int* value);
+
+/* try to write all buffer to socket incase not all data written
+ * will failed when write failed,
+ * return 0 when succeed
+ */
+int write_all(int socket_id, const char* buffer, int size);
+
+/* try to read buffer with length=size to socket, will fail when 
+ * read failed,
+ * return 0 when succeed
+ */ 
+int read_all(int socket_id, char* buffer, int size);
 
 #endif // _HD_CLIENT_NET_UTILS_H

@@ -1,12 +1,10 @@
 #ifndef _HD_CLIENT_HADOOP_RPC_H
 #define _HD_CLIENT_HADOOP_RPC_H
 
-/* 
- * application id, it will be zero when we initialize,
- * and by current design, there will be only one app in each client
- */
-extern int app_id;
-extern int app_attempt_id;
+#include <stdbool.h>
+
+extern struct pbc_env* env;
+extern bool is_env_initialize;
 
 typedef enum { 
     NM, // Node Mgr
@@ -25,7 +23,10 @@ typedef struct {
     hadoop_client_type_t client_type;  /* client type */
     hadoop_server_type_t server_type;  /* server type */
     int socket_id;                     /* socket-id, assume user shouldn't access this */
-    const char* protocol_name          /* name of protocol, assume user shouldn't access this */
+    const char* protocol_name;         /* name of protocol, assume user shouldn't access this */
+    int app_id;                        /* application-id */
+    int app_attempt_id;                /* application-attempt-id */
+    long cluster_timestamp;            /* time stamp of the cluster */
 } hadoop_rpc_proxy_t;
 
 typedef struct {
@@ -35,20 +36,19 @@ typedef struct {
  * get rpc proxy for user specified client/server type
  * return null when failed
  */ 
-struct hadoop_rpc_proxy_t* new_hadoop_rpc_proxy(
+hadoop_rpc_proxy_t* new_hadoop_rpc_proxy(
     const char* host,
     int port,
     hadoop_client_type_t client_type, 
-    hadoop_server_type_t server_type,
-    const char* hadoop_version);       /* pass NULL we will use latest YARN version we support */
+    hadoop_server_type_t server_type);       /* pass NULL we will use latest YARN version we support */
 
 /**
  * submit application to YARN-RM
  * return 0 if succeed, otherwise, it's failed
  */
 int submit_application(
-    struct hadoop_rpc_proxy_t* proxy, 
-    struct submit_application_context_t* context);
+    hadoop_rpc_proxy_t* proxy, 
+    submit_application_context_t* context);
 
 /**
  * init protobuf env, the pb_dir should contains compiled pb_file
@@ -57,8 +57,13 @@ int submit_application(
 int init_pb_env(const char* pb_dir, const char* hadoop_version);
 
 /**
+ * destory pb environment 
+ */
+void destory_pb_env();
+
+/**
  * destory proxy
  */
-void destory_hadoop_rpc_proxy(struct hadoop_rpc_proxy_t* proxy);
+void destory_hadoop_rpc_proxy(hadoop_rpc_proxy_t* proxy);
 
 #endif
