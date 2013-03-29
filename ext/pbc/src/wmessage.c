@@ -141,6 +141,14 @@ pbc_wmessage_integer(struct pbc_wmessage *m, const char *key, uint32_t low, uint
 		_packed_integer(m , f, key , low, hi);
 		return 0;		
 	}
+
+    /* 
+     * OK, seems it's better not to do this, because in some applications
+     * it will check if the protobuf object "hasSomeField". If user has 
+     * already set the value to default value, but the application will report
+     * the value is not set and reject, so I commented the following lines.*/
+
+    /*
 	if (f->label == LABEL_OPTIONAL) {
 		if (f->type == PTYPE_ENUM) {
 			if (low == f->default_v->e.id)
@@ -152,6 +160,7 @@ pbc_wmessage_integer(struct pbc_wmessage *m, const char *key, uint32_t low, uint
 			}
 		}
 	}
+    */
 	int id = f->id << 3;
 
 	_expand(m,20);
