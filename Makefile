@@ -9,7 +9,7 @@ BUILD = build
 LIBSRCS = main.c net_utils.c pbc_utils.c str_utils.c hadoop_rpc.c client_rm_protocol_impl.c hadoop_rpc_utils.c
 LIBNAME = libhdclient.a
 
-TESTSRCS = main.c pb_test.c pbc_register_all.c yarn_type.c hadoop_rpc_request.c new_application_test.c
+TESTSRCS = main.c pb_test.c pbc_register_all.c yarn_type.c hadoop_rpc_request.c new_application_test.c error_msg_response.c
 
 BUILD_O = $(BUILD)/o
 
@@ -57,7 +57,7 @@ define TEST_temp
   $$(TAR) : | $(BUILD)
   $$(TAR) : $(LIBNAME)
   $$(TAR) : test/$(1) 
-	cd $(BUILD) && $(CC) $(CFLAGS) -I.. -L. -L../ext/pbc/build -o $$(notdir $$@) ../$$< -lhdclient -lpbc
+	cd $(BUILD) && $(CC) $(CFLAGS) -I.. -I../src -L. -L../ext/pbc/build -o $$(notdir $$@) ../$$< -lhdclient -lpbc
 endef
 
 $(foreach s,$(TESTSRCS),$(eval $(call TEST_temp,$(s))))
