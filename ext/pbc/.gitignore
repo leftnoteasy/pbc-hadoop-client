@@ -1,0 +1,14 @@
+.deps
+Makefile
+autom4te.*
+config.*
+configure
+depcomp
+install-sh
+libtool
+ltmain.sh
+stamp-h1
+*.lo
+*.o
+.libs
+*.la

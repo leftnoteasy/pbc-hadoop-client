@@ -109,6 +109,11 @@ int write_connection_header(hadoop_rpc_proxy_t* proxy) {
     /* write IpcConectionContextProto to socket */
     struct pbc_wmessage* ipc_proto = pbc_wmessage_new(env, 
         "hadoop.common.IpcConnectionContextProto");
+    if (!ipc_proto) {
+        printf("current env not contains hadoop.common.IpcConnectionContextProto, plz check.\n");
+        return -1;
+    }
+
     pbc_wmessage_string(ipc_proto, "protocol", proxy->protocol_name, 0);
     pbc_wmessage_buffer(ipc_proto, &slice);
 
@@ -218,6 +223,11 @@ int write_request(
 int generate_request_header(char** p_buffer, int* size, int caller_id) {
     struct pbc_wmessage* header = pbc_wmessage_new(env, 
         "hadoop.common.RpcPayloadHeaderProto");
+    if (!header) {
+        printf("current env not contains hadoop.common.RpcPayloadHeaderProto, plz check.");
+        return -1;
+    }
+
     struct pbc_slice slice;
 
     pbc_wmessage_integer(header, "rpcKind", 2, 0);
@@ -254,6 +264,10 @@ int generate_hadoop_request(const char* request,
     char** pbuffer, 
     int* size) {
     struct pbc_wmessage* rmsg = pbc_wmessage_new(env, "hadoop.common.HadoopRpcRequestProto");
+    if (!rmsg) {
+        printf("current env not contains hadoop.common.HadoopRpcRequestProto, plz check.\n");
+        return -1;
+    }
     struct pbc_slice slice;
 
     pbc_wmessage_string(rmsg, "methodName", method, 0);
